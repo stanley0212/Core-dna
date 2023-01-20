@@ -1,0 +1,37 @@
+<?php
+
+// Get the Bearer token by sending an OPTIONS request
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://corednacom.corewebdna.com/assessment-endpoint.php");
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+curl_close($ch);
+$token = json_decode($response, true)['token'];
+
+// Prepare the payload
+$payload = array(
+    "name" => "John Doe",
+    "email" => "spamwelcomedhere@gmail.com",
+    "url" => "https://github.com/john-doe/http-client"
+);
+
+// Submit the payload to the endpoint
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://corednacom.corewebdna.com/assessment-endpoint.php");
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    "Authorization: Bearer $token",
+    "Content-Type: application/json"
+));
+$response = curl_exec($ch);
+curl_close($ch);
+
+// Check the response
+if(json_decode($response, true)["status"] == "success") {
+    echo "Payload submitted successfully";
+} else {
+    echo "Error submitting payload";
+}
